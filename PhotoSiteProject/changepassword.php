@@ -31,21 +31,71 @@ $dbh = ConnectDB();
 
 <?php
 if(!(isset($_SESSION["user_id"]))) {
-    $_SESSION["message"] = "You need to be logged in to change your password.";
+    $_SESSION["message"] = array(
+	"You need to be logged in to change your password.",
+	"red",
+    );
     header("Location: start.php");
     exit();
-} else { ?>
-<form action="" method="post">
+} else {
+    $username = getUser($_SESSION["user_id"])->username;
+    echo("<table id='navbar'>");
+    echo("<tr>");
+    echo("<td>Logged in as " . $username . "</td>");
+    echo("<td><a href='start.php?logout'>Log Out</a></td>");
+    echo("<td><a href='changepassword.php'>Change Password</a></td>");
+    echo("</tr>");
+    echo("</table>");
+
+    echo("<form action='");
+    if(isset($_POST["old_password"])
+    && isset($_POST["new_password"]) && isset($_POST["new_confirm"])) {
+        // put post vars in local vars
+        $old_password = $_POST["old_password"];
+	$new_password = $_POST["new_password"];
+	$new_confirm = $_POST["new_confirm"];
+	// put user id in local var for password validation
+	$id = $_SESSION["user_id"];
+	if($old_password == "") {
+	    $_SESSION["failed_changepwd"] = "Old password is required.";
+	} else if($new_password == "") {
+	    $_SESSION["failed_changepwd"] = "New password is required.";
+	} else if($new_confirm == "") {
+	    $_SESSION["failed_changepwd"] = "Please confirm new password.";
+	} else if(checkPasswordMatch($old_password, $id) < 0) {
+	    $_SESSION["failed_changepwd"] = "Your old password was incorrect.";
+	} else if($new_password != $new_confirm) {
+	    $_SESSION["failed_changepwd"] = 
+		"Your new password and confirmed new password didn't match.";
+	} else if(checkPasswordMatch($new_password, $id) > 0) {
+	    // The second call to checkPasswordMatch is redundant,
+	    // but for good measure, I think.
+	    $_SESSION["failed_changepwd"] = 
+		    "Your new password can't be the same as your old password.";
+	} else {
+	    changePassword($new_password, $id);
+	    $_SESSION["message"] = array(
+		"Your password was successfully changed.",
+		"green",
+	    );
+	    header('Location: start.php');
+	    exit();
+	}
+    }
+    echo("' method='post'>");
+?>
 <fieldset class="userfieldset">
 <legend>Change your password</legend>
 <table>
     <tr>
 	<td>Old password:</td>
-	<td><input name="old_password" id="old_password" type="password"/></td>
+	<td><input name="old_password" id="old_password" size="30" 
+	    maxlength="100" type="password"/></td>
     </tr>
     <tr>
 	<td>New password:</td>
-	<td><input name="new_password" id="new_password" type="password"/></td>
+	<td><input name="new_password" id="new_password" size="30" 
+	    maxlength="100" type="password"/></td>
 	<td id="msg_changepwd" style="color:red">
 <?php if(isset($_SESSION["failed_changepwd"])) {
     echo($_SESSION["failed_changepwd"]);
@@ -55,7 +105,8 @@ if(!(isset($_SESSION["user_id"]))) {
     </tr>
     <tr>
 	<td>Confirm new password:</td>
-	<td><input name="new_confirm" id="new_confirm" type="password"/></td>
+	<td><input name="new_confirm" id="new_confirm" size="30" 
+	    maxlength="100" type="password"/></td>
     </tr>
     <tr>
 	<td><input type="submit" name="submit" value="Change"/></td>
@@ -63,7 +114,9 @@ if(!(isset($_SESSION["user_id"]))) {
 </table>
 </fieldset>
 </form>
-<?php } ?>
+<?php 
+var_dump($_SESSION);
+} ?>
 <br>
 
 <footer style="border-top: 1px solid blue">

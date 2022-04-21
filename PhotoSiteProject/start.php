@@ -32,22 +32,24 @@ if(isset($_GET["logout"])) {
 <hr>
 
 <?php
+if(isset($_SESSION["message"])) {
+    // put message vars in local vars
+    $text = $_SESSION["message"][0];
+    $color = $_SESSION["message"][1];
+    echo("<p style='margin-left:12%; color:"
+        . $color . "'>" . $text . "</p>");
+    unset($_SESSION["message"]);
+}
 if (!(isset($_SESSION["user_id"]))) { 
-    if(isset($_SESSION["message"])) {
-	echo("<p style='margin-left:12%; color:red'>" . $_SESSION["message"] . "</p>");
-	unset($_SESSION["message"]);
-    }
-?>
-<form action="
-<?php
+    echo("<form action='");
     if(isset($_POST["register"])
     && isset($_POST["new_email"]) && isset($_POST["new_password"])) {
 	// put post vars in local vars
 	$username = $_POST["new_email"];
 	$password = $_POST["new_password"];
-	if($_POST["new_email"] == "") {
+	if($username == "") {
 	    $_SESSION["failed_register"] = "Email field is required.";
-	} else if($_POST["new_password"] == "") {
+	} else if($password == "") {
 	    $_SESSION["failed_register"] = "Password field is required.";
 	} else if(usernameIsLegal($username) == -1) {
 	    $_SESSION["failed_register"] = "Did not register invalid email.";
@@ -69,14 +71,15 @@ if (!(isset($_SESSION["user_id"]))) {
 	header("Location: start.php");
 	exit();
     }
+    echo("' method='post'>");
 ?>
-" method="post">
 <fieldset class="userfieldset">
 <legend>New user? Register for an account</legend>
 <table>
     <tr>
         <td>Email:</td>
-	<td><input name="new_email" id="new_email" type="text"/></td>
+	<td><input name="new_email" id="new_email" size="30" maxlength="31" 
+	    type="text"/></td>
 	<td id="msg_register" rowspan="2" style="color:red">
 <?php if(isset($_SESSION["failed_register"])) {
     echo($_SESSION["failed_register"]);
@@ -86,7 +89,8 @@ if (!(isset($_SESSION["user_id"]))) {
     </tr>
     <tr>
 	<td>Password:</td>
-	<td><input name="new_password" id="new_password" type="password"/></td>
+	<td><input name="new_password" id="new_password" size="30" 
+	    maxlength="100" type="password"/></td>
     </tr>
     <tr>
 	<td><input type="submit" name="register" value="Register"/></td>
@@ -103,9 +107,9 @@ if (!(isset($_SESSION["user_id"]))) {
 	// put post vars in local vars
 	$username = $_POST["email"];
 	$password = $_POST["password"];
-	if($_POST["email"] == "") {
+	if($username == "") {
 	    $_SESSION["failed_login"] = "Email field is required.";
-	} else if($_POST["password"] == "") {
+	} else if($password == "") {
 	    $_SESSION["failed_login"] = "Password field is required.";
 	} else {
 	    // try to get user id
@@ -130,7 +134,8 @@ if (!(isset($_SESSION["user_id"]))) {
 <table>
     <tr>
         <td>Email:</td>
-	<td><input name="email" id="email" type="text"/></td>
+	<td><input name="email" id="email" size="30" maxlength="30" 
+	    type="text"/></td>
 	<td id="msg_login" rowspan="2" style="color:red">
 <?php if(isset($_SESSION["failed_login"])) {
     echo($_SESSION["failed_login"]);
@@ -140,7 +145,8 @@ if (!(isset($_SESSION["user_id"]))) {
     </tr>
     <tr>
         <td>Password:</td>
-        <td><input name="password" id="password" type="password"/></td>
+	<td><input name="password" id="password" size="30" maxlength="100" 
+	    type="password"/></td>
     </tr>
     <tr>
 	<td><input type="submit" name="signin" value="Sign In"/></td>

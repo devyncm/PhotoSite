@@ -6,7 +6,7 @@ $dbh = ConnectDB();
 // Check if a username is legal.
 function usernameIsLegal($username) {
     $email_pattern = '/^\S+@\S+\.\S+$/';
-    if(preg_match($email_pattern, $username)) {
+    if(strlen($username) <= 30 && preg_match($email_pattern, $username)) {
         return 1;
     }
     return -1;
@@ -114,6 +114,88 @@ function getUserIDFromUsername($username) {
 	return -1;
     } catch(PDOException $e) {
 	die('PDOException in getUserIDFromUsername(): '
+	    . $e.getMessage());
+    }
+}
+
+function checkPasswordMatch($password, $id) {
+    $hashed_pwd = getUser($id)->password;
+    if(password_verify($password, $hashed_pwd)) {
+	return 1;
+    }
+    return -1;
+}
+
+function changePassword($password, $id) {
+    global $dbh;
+    try {
+	$query = "UPDATE photo_users
+	    SET password = :password
+	    WHERE user_id = :id";
+	$stmt = $dbh->prepare($query);
+        // hash the password
+        $hashed_pwd = password_hash($password, PASSWORD_DEFAULT);
+        $stmt->bindParam('password', $hashed_pwd);
+        $stmt->bindParam('id', $id);
+	$stmt->execute();
+    } catch(PDOException $e) {
+	die('PDOException in changePassword(): '
+	    . $e.getMessage());
+    }
+}
+
+function addUserToken($id, $token, $time) {
+    global $dbh;
+    try {
+	$query = "INSERT INTO photo_users_tokens
+	    VALUES(default, :user_id, :token, :time)";
+	$stmt = $dbh->prepare($query);
+	$stmt->bindParam('user_id', $id);
+	$stmt->bindParam('token', $token);
+	$stmt->bindParam('time', $time);
+	$stmt->execute();
+    } catch(PDOException $e) {
+	die('PDOException in addUserToken(): '
+	    . $e.getMessage());
+    }
+}
+
+function checkUserToken($token) {
+    global $dbh;
+    try {
+	$query = "SELECT user_id, time FROM photo_users_tokens
+	    WHERE token = :token";
+	$stmt = $dbh->prepare($query);
+	$stmt->bindParam('token', $token);
+	$stmt->execute();
+	$token = $stmt->fetchAll(PDO::FETCH_OBJ);
+	if(count($token) > 0) {
+	    // the token expires after 1 hour
+	    $expiration = 3600;
+	    $token_time = $token[0]->time;
+	    $diff = time() - $token_time;
+	    if($diff <= $expiration) {
+		return $token[0]->user_id;
+	    }
+	}
+	// return -1 if the token was invalid
+	return -1;
+    } catch(PDOException $e) {
+	die('PDOException in checkUserToken(): '
+	    . $e.getMessage());
+    }
+}
+
+function deleteUserTokens($id) {
+    global $dbh;
+    try {
+	$query = "DELETE FROM photo_users_tokens
+	    WHERE user_id = :id";
+	$stmt = $dbh->prepare($query);
+	$stmt->bindParam('id', $id);
+	$stmt->execute();
+    } catch(PDOException $e) {
+	die('PDOException in deleteUserTokens(): '
 	    . $e.getMessage());
     }
 }

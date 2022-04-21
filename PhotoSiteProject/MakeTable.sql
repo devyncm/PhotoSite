@@ -1,4 +1,4 @@
-CREATE TABLE `photo_users` 
+CREATE TABLE `photo_users` (
   `user_id` int(6) NOT NULL auto_increment,
   `joindate` date NOT NULL,
   `username` varchar(20) NOT NULL,
@@ -6,6 +6,14 @@ CREATE TABLE `photo_users`
   `profile_pic_id` int(8),
   PRIMARY KEY  (`user_id`),
   CONSTRAINT userexists UNIQUE KEY (username)
+);
+
+CREATE TABLE `photo_users_tokens` (
+  `token_id` int(6) NOT NULL auto_increment,
+  `user_id` int(6) NOT NULL,
+  `token` char(60) NOT NULL,
+  `time` int(60) NOT NULL,
+  PRIMARY KEY (`token_id`)
 );
 
 # If you want to use SQL constraints for extra error-checking, see

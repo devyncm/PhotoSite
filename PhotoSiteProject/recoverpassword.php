@@ -24,6 +24,94 @@ $dbh = ConnectDB();
 
 <h1 class="center">Project</h1>
 <h3 class="center">Recover Password</h3>
+<hr>
+<?php
+if(isset($_SESSION["user_id"])) {
+    header('Location: start.php');
+    exit();
+} else {
+    if(isset($_SESSION["message"])) {
+	// put message vars in local vars
+	$text = $_SESSION["message"][0];
+	$color = $_SESSION["message"][1];
+	echo("<p style='margin-left:12%; color:"
+	    . $color . "'>" . $text . "</p>");
+	unset($_SESSION["message"]);
+    }
+    echo("<form action='");
+    if(isset($_POST["email"])) {
+	$email = $_POST["email"];
+	if($email == "") {
+	    $_SESSION["failed_recover"] = "Email field is required.";
+	} else {
+	    $id = getUserIDFromUsername($email);
+	    if($id < 0) {
+		$_SESSION["failed_recover"] = "Email is not registered.";
+	    } else {
+		// remove user's old tokens
+		deleteUserTokens($id);    
+		// create and add token to database
+		$now = time();
+		$token = bin2hex(random_bytes(30));
+		addUserToken($id, $token, $now);
+		// put together and send the email
+		$host = "elvis.rowan.edu";
+		$site = "Project";
+		$resetsite = 
+		    "/~melend53/PhotoSiteProject/resetpassword.php";
+		$myemail = "noreply@elvis.rowan.edu";
+		// put together the email
+		$subject = "$site: Password Recovery";
+		$headers = "From: $myemail \r\n" .
+		    "Reply-To: $myemail \r\n" .
+	    	    'X-Mailer: PHP/' . phpversion();
+		$message = "Forgot your password at $site?\r\n\r\n" .
+		    "To reset your password, please click this link:\r\n\r\n" .
+		    "http://$host$resetsite?token=$token \r\n" .
+		    "This link will expire in 1 hour. \r\n\r\n" .
+		    "(If you did not request this, \r\n" .
+		    "just ignore this message.)\r\n";
+
+		mail($email, $subject, $message, $headers);
+		$_SESSION["message"] = array(
+		    "A recovery link was sent to $email.",
+		    "green",
+		);
+	    }
+	}
+	// Reload the current page
+	header('Location: recoverpassword.php');
+	exit();
+    }
+    echo("' method='post'>");
+?>
+<fieldset class="userfieldset">
+<legend>Enter your email to send a recovery link</legend>
+<table>
+    <tr>
+	<td>Email:</td>
+	<td><input name="email" size="30" maxlength="30" type="text"/></td>
+	<td style="color:red">
+<?php
+    if(isset($_SESSION["failed_recover"])) {
+	echo($_SESSION["failed_recover"]);
+	unset($_SESSION["failed_recover"]);
+    }
+?>	</td>
+    </tr>
+    <tr>
+	<td><input type="submit" name="submit" value="Send"/></td>
+    </tr>
+</table>
+</fieldset>
+</form>
+<br>
+<div class="center"><a href="start.php">Back to Login</a></div>
+<?php
+}
+var_dump($_SESSION);
+?>
+<br>
 
 <footer style="border-top: 1px solid blue">
  <a href="http://elvis.rowan.edu/~melend53/" 

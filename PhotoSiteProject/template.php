@@ -3,6 +3,7 @@
 session_start();
 
 include_once("debughelp.php");
+include_once("dbfunctions.php");
 require_once("connect.php");
 $dbh = ConnectDB();
 
@@ -17,10 +18,7 @@ $dbh = ConnectDB();
   <meta charset="utf-8" />
   <meta name="Author" content="Devyn Melendez" />
   <meta name="generator" content="vim" />
-  <style>
-    a { text-decoration: none; }
-    a:hover { text-decoration: underline; }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -43,7 +41,7 @@ $dbh = ConnectDB();
 <footer style="border-top: 1px solid blue">
  <a href="http://elvis.rowan.edu/~melend53/" 
     title="Link to my home page">
-    D. Provine
+    D. Melendez 
  </a>
 
 <span style="float: right;">
