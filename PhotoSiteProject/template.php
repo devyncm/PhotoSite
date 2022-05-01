@@ -1,7 +1,6 @@
 <?php
 
 session_start();
-
 include_once("debughelp.php");
 include_once("dbfunctions.php");
 require_once("connect.php");
@@ -23,20 +22,9 @@ $dbh = ConnectDB();
 
 <body>
 
-<h1> Big Title </h1>
-
-<h2> Minor Title 1 </h2>
-  
-<p>
-    Paragraph 1
-</p>
-
-<h2> Minor Title 2 </h2>
-  
-<p>
-    Paragraph 2
-</p>
-
+<h1 class="center">Project</h1>
+<h3 class="center">Subtitle</h3>
+<hr>
 
 <footer style="border-top: 1px solid blue">
  <a href="http://elvis.rowan.edu/~melend53/" 

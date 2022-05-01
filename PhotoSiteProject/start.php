@@ -7,6 +7,9 @@ $dbh = ConnectDB();
 
 if(isset($_GET["logout"])) {
     session_unset();
+} else if(isset($_GET["deleteaccount"]) && isset($_SESSION["user_id"])) {
+    deleteUser($_SESSION["user_id"]);
+    session_unset();
 }
 ?>
 <!-- This page is a start page to register, login, or navigate the site --!>
@@ -36,7 +39,7 @@ if(isset($_SESSION["message"])) {
     // put message vars in local vars
     $text = $_SESSION["message"][0];
     $color = $_SESSION["message"][1];
-    echo("<p style='margin-left:12%; color:"
+    echo("<p id='message' style='color: "
         . $color . "'>" . $text . "</p>");
     unset($_SESSION["message"]);
 }
@@ -51,16 +54,16 @@ if (!(isset($_SESSION["user_id"]))) {
 	    $_SESSION["failed_register"] = "Email field is required.";
 	} else if($password == "") {
 	    $_SESSION["failed_register"] = "Password field is required.";
-	} else if(usernameIsLegal($username) == -1) {
+	} else if(!(usernameIsLegal($username))) {
 	    $_SESSION["failed_register"] = "Did not register invalid email.";
-	} else if(usernameExists($username) == 1) {
+	} else if(usernameExists($username)) {
 	    $_SESSION["failed_register"] = 
 		"Did not register already existing email.";
 	} else {
 	    addUser($username, $password);
 	    // get the new user's id so we can log them in
 	    $user_id = getUserIDFromUsername($username);
-	    if($user_id > -1) {
+	    if($user_id) {
 	        // add user's id to session
 	        $_SESSION["user_id"] = $user_id;
 	    } else {
@@ -68,7 +71,7 @@ if (!(isset($_SESSION["user_id"]))) {
 	    }
 	}
 	// reload the current page
-	header("Location: start.php");
+	header("Location: start");
 	exit();
     }
     echo("' method='post'>");
@@ -114,7 +117,7 @@ if (!(isset($_SESSION["user_id"]))) {
 	} else {
 	    // try to get user id
 	    $user_id = getUserID($username, $password);
-	    if($user_id > -1) {
+	    if($user_id) {
 		$_SESSION["user_id"] = $user_id;
 	    } else {
 	        // login failed
@@ -124,7 +127,7 @@ if (!(isset($_SESSION["user_id"]))) {
 	    }
 	}
 	// Reload the current page
-	header("Location: start.php");
+	header("Location: start");
 	exit();
     }
 ?>
@@ -150,27 +153,60 @@ if (!(isset($_SESSION["user_id"]))) {
     </tr>
     <tr>
 	<td><input type="submit" name="signin" value="Sign In"/></td>
-	<td><a href="recoverpassword.php">Forgot password?</a></td>
+	<td><a href="recoverpassword">Forgot password?</a></td>
     </tr>
 </table>
 </fieldset>
 </form>
 <br>
-
+<p class='center'>Visit the <a href='gallery'>gallery</a> 
+  to see what amazing photos people are sharing.</p>
+<?php
+    $photo_count = countTodaysPhotos();
+    if($photo_count) {
+	$newest_photo = getNewestPhoto();
+	$plural = "";
+	if($photo_count > 1) {
+	    $plural = "s";
+	}
+	echo("<p class='center'><b>$photo_count new photo$plural 
+	    uploaded today!</b></p>");
+	echo("<div class='center'><a href='photo?id=$newest_photo->photo_id'>
+	    <img class='bordered' style='width: 8%' 
+		src='$newest_photo->filelocation'></a></div>");
+    }
+?>
+<h2 class='center'>Once you sign up, you can ...</h2>
+<ul style='display: table; margin: 0 auto'>
+  <li>Upload photos</li>
+  <li>Customize and manage your profile</li>
+  <li>Leave comments on photos</li>
+  <li>... and more!</li>
+</ul>
+<br>
 <?php } else {
     $username = getUser($_SESSION["user_id"])->username;
-    echo("<table id='navbar'>");
-    echo("<tr>");
-    echo("<td>Logged in as " . $username . "</td>");
-    echo("<td><a href='start.php?logout'>Log Out</a></td>");
-    echo("<td><a href='changepassword.php'>Change Password</a></td>");
-    echo("</tr>");
-    echo("</table>");
-}
-var_dump($_SESSION);
+    echo("<table id='navbar'>
+	<tr>
+	<td>Logged in as " . $username . "</td>
+	<td><a href='profile'>Your Profile</a></td>
+	<td><a href='upload'>Upload</a></td>
+	<td><a href='gallery'>Gallery</a></td>
+	<td><a href='start?logout'>Log Out</a></td>
+	</tr>
+	</table>");
 ?>
-<br>
-
+<h3 class="center">Welcome to the website!</h3>
+<div class='container'>
+  <p>View <a href='profile'>your profile</a> to browse your uploaded photos 
+	and manage your account.</p>
+  <p>The <a href='upload'>upload</a> page lets you upload a new photo, 
+	visible on your profile and in the gallery.</p>
+  <p>Visit the <a href='gallery'>gallery</a> to see what everyone's sharing 
+	with the world.</p>
+</div>
+<?php
+} ?>
 <footer style="border-top: 1px solid blue">
  <a href="http://elvis.rowan.edu/~melend53/"
     title="Link to my home page">

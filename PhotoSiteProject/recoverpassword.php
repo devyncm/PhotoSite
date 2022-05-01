@@ -27,14 +27,14 @@ $dbh = ConnectDB();
 <hr>
 <?php
 if(isset($_SESSION["user_id"])) {
-    header('Location: start.php');
+    header('Location: start');
     exit();
 } else {
     if(isset($_SESSION["message"])) {
 	// put message vars in local vars
 	$text = $_SESSION["message"][0];
 	$color = $_SESSION["message"][1];
-	echo("<p style='margin-left:12%; color:"
+	echo("<p id='message' style='color: "
 	    . $color . "'>" . $text . "</p>");
 	unset($_SESSION["message"]);
     }
@@ -45,7 +45,7 @@ if(isset($_SESSION["user_id"])) {
 	    $_SESSION["failed_recover"] = "Email field is required.";
 	} else {
 	    $id = getUserIDFromUsername($email);
-	    if($id < 0) {
+	    if(!($id)) {
 		$_SESSION["failed_recover"] = "Email is not registered.";
 	    } else {
 		// remove user's old tokens
@@ -80,7 +80,7 @@ if(isset($_SESSION["user_id"])) {
 	    }
 	}
 	// Reload the current page
-	header('Location: recoverpassword.php');
+	header('Location: recoverpassword');
 	exit();
     }
     echo("' method='post'>");
@@ -106,7 +106,7 @@ if(isset($_SESSION["user_id"])) {
 </fieldset>
 </form>
 <br>
-<div class="center"><a href="start.php">Back to Login</a></div>
+<div class="center"><a href="start">Back to Login</a></div>
 <?php
 }
 var_dump($_SESSION);

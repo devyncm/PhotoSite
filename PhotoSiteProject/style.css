@@ -1,9 +1,22 @@
+body {
+	font-family: Verdana, Arial, sans-serif;
+}
+
 a {
 	text-decoration: none;
+	color: mediumblue;
+}
+
+a:visited {
+	color: darkviolet;
 }
 
 a:hover {
 	text-decoration: underline;
+}
+
+a:active {
+	color: orangered;
 }
 
 body {
@@ -12,11 +25,34 @@ body {
 
 #navbar {
 	width: 100%;
+	background-color: azure;
+}
+
+#navbar tr {
+	background-color: aliceblue;
 }
 
 #navbar td {
-	width: 33%;
+	width: 20%;
 	text-align: center;
+}
+
+#guestnavbar {
+        width: 100%;
+        background-color: azure;
+}
+
+#guestnavbar tr {
+        background-color: aliceblue;
+}
+
+#guestnavbar td {
+        width: 33%;
+        text-align: center;
+}
+
+#message {
+	margin-left: 5%;
 }
 
 .center {
@@ -29,4 +65,102 @@ body {
 	width: 75%;
 	margin-left: auto;
 	margin-right: auto;
+}
+
+.inputtable {
+	margin-left: auto;
+	margin-right: auto;
+	text-align: center;
+	border: 2px solid blue;
+	background-color: skyblue;
+}
+
+.profilepic {
+	border: 5px solid aliceblue;
+	border-radius: 5px;
+	max-width: 20%;
+}
+
+.bordered {
+	border: 8px solid aliceblue;
+	border-radius: 8px;
+	max-width: 90%;
+}
+
+.comments {
+	border: 3px solid darkslateblue;
+	border-style: double;
+	border-collapse: collapse;
+	width: 90%;
+	margin-left: auto;
+	margin-right: auto;
+	word-break: break-all;
+}
+
+.comments th {
+	border: 3px solid darkslateblue;
+	border-style: double;
+	border-collapse: collapse;
+}
+
+.comments td {
+	border: 3px solid darkslateblue;
+        border-style: double;
+        border-collapse: collapse;
+	height: 150px;
+}
+
+.comments th#usercol {
+	width: 20%;
+}
+
+.comments th#datecol {
+	width: 20%;
+}
+
+.comments a {
+	text-decoration: none;
+}
+
+.comments a img {
+        max-width: 90%;
+}
+
+.gallery {
+	margin-left: 2%;
+	margin-right: 2%;
+	padding: 15px 10px 10px;
+	border-radius: 30px; 
+	background-color: skyblue;
+	text-align: center;
+}
+
+.gallery a:hover {
+	text-decoration: none;
+}
+
+.gallery a img {
+	max-width: 15%;
+	vertical-align: middle;
+	padding: 0px 5px 5px;
+	opacity: 1.0;
+	transition: opacity .3s ease-in-out;
+        -moz-transition: opacity .3s ease-in-out;
+        -webkit-transition: opacity .3s ease-in-out;
+}
+
+.gallery a img:hover {
+	opacity: 0.6;
+	transition: opacity .3s ease-in-out;
+	-moz-transition: opacity .3s ease-in-out;
+	-webkit-transition: opacity .3s ease-in-out;
+}
+
+.container {
+	width: 60%;
+	margin: 0 auto;
+}
+
+th, td {
+    padding: 5px;
 }

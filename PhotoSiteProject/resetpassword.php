@@ -30,34 +30,34 @@ $dbh = ConnectDB();
 <hr>
 <?php
 if(isset($_SESSION["user_id"])) {
-    header('Location: start.php');
+    header('Location: start');
     exit();
 } else if(!(isset($_GET["token"]))) {
     $_SESSION["message"] = array(
 	"No recovery token was provided.",
 	"red",
     );
-    header('Location: recoverpassword.php');
+    header('Location: recoverpassword');
     exit();
 } else {
     $id = checkUserToken($_GET["token"]);
-    if($id < 0) {
+    if(!($id)) {
 	$_SESSION["message"] = array(
 	    "The provided recovery token was invalid or expired.",
 	    "red",
 	);
-	header('Location: recoverpassword.php');
+	header('Location: recoverpassword');
 	exit();
     }
     if(isset($_SESSION["message"])) {
         // put message vars in local vars
         $text = $_SESSION["message"][0];
         $color = $_SESSION["message"][1];
-        echo("<p style='margin-left:12%; color:"
+        echo("<p id='message' style='color: "
             . $color . "'>" . $text . "</p>");
         unset($_SESSION["message"]);
     }
-    echo("<form action='");
+    echo("<br><form action='");
     if(isset($_POST["new_password"]) && isset($_POST["new_confirm"])) {
 	// put post vars in local vars
 	$new_password = $_POST["new_password"];
@@ -69,7 +69,7 @@ if(isset($_SESSION["user_id"])) {
 	} else if($new_password != $new_confirm) {
 	    $_SESSION["failed_resetpwd"] = 
 		"Your new password and confirmed new password didn't match.";
-	} else if(checkPasswordMatch($new_password, $id) > 0) {
+	} else if(checkPasswordMatch($new_password, $id)) {
 	    $_SESSION["failed_resetpwd"] = 
 		"Your new password can't be the same as your old password.";
 	} else {
@@ -80,11 +80,11 @@ if(isset($_SESSION["user_id"])) {
 	    );
 	    // delete user's tokens
 	    deleteUserTokens($id);
-	    header('Location: start.php');
+	    header('Location: start');
 	    exit();
 	}
 	// Reload the current page
-	header("Location: resetpassword.php?token=$token");
+	header("Location: resetpassword?token=$token");
 	exit();
     }
     echo("' method='post'>");
@@ -116,11 +116,9 @@ if(isset($_SESSION["user_id"])) {
 </fieldset>
 </form>
 <br>
-<div class="center"><a href="start.php">Back to Login</a></div>
+<div class="center"><a href="start">Back to Login</a></div>
 <?php
-}
-var_dump($_SESSION);
-?>
+} ?>
 <br>
 
 <footer style="border-top: 1px solid blue">

@@ -20,9 +20,9 @@ if(isset($_GET["username"])) {
 function usernameIsLegal($username) {
     $email_pattern = '/^\S+@\S+\.\S+$/';
     if(preg_match($email_pattern, $username)) {
-	return true;
+	return 1;
     }
-    return false;
+    return 0;
 }
 // Check if a username already exists in the database.
 function usernameExists($username) {
@@ -35,9 +35,9 @@ function usernameExists($username) {
         $stmt->execute();
         $count = $stmt->fetchAll(PDO::FETCH_OBJ);
         if($count[0]->cnt > 0) {
-	    return true;
+	    return 1;
 	}
-        return false;
+        return 0;
     } catch(PDOException $e) {
         die('PDOException in validateusername.usernameExists(): '
             . $e.getMessage());
