@@ -108,9 +108,7 @@ if(isset($_SESSION["user_id"])) {
 <br>
 <div class="center"><a href="start">Back to Login</a></div>
 <?php
-}
-var_dump($_SESSION);
-?>
+} ?>
 <br>
 
 <footer style="border-top: 1px solid blue">
